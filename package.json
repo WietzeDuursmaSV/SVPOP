@@ -4,11 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 5173",
+    "dev": "vite --config vite.presentation.config.js",
+    "cache:clean": "rm -rf node_modules/.vite node_modules/.vite-presentation node_modules/.vite-control",
+    "ports:free": "kill-port 3001 5173 5174",
     "dev:api": "node server/todo-server.js",
-    "dev:presentation": "vite --port 5173",
-    "dev:control": "vite --port 5174",
-    "dev:all": "concurrently \"npm run dev:api\" \"npm run dev:presentation\" \"npm run dev:control\"",
+    "dev:presentation": "vite --config vite.presentation.config.js",
+    "dev:control": "vite --config vite.control.config.js",
+    "dev:all": "npm run ports:free && npm run cache:clean && concurrently \"npm run dev:api\" \"npm run dev:presentation\" \"npm run dev:control\"",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -16,11 +18,13 @@
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "highlight.js": "^11.11.1",
+    "html2pdf.js": "^0.10.3",
     "vue": "^3.5.34"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.6",
     "concurrently": "^9.2.1",
+    "kill-port": "^2.0.1",
     "vite": "^8.0.12"
   }
 }

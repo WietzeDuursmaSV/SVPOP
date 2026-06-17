@@ -15,6 +15,11 @@
     <div class="slide-content">
       <div class="code-window">
         <div class="window-header">
+          <div class="window-lights">
+            <span class="light light-red"></span>
+            <span class="light light-yellow"></span>
+            <span class="light light-green"></span>
+          </div>
           <span class="title">career-compass.ts</span>
         </div>
         <pre><code v-html="highlightedCode"></code></pre>

@@ -80,22 +80,30 @@
   align-items: center;
 }
 
-.window-header::before {
-  content: '';
-  width: 12px;
-  height: 12px;
-  background: #ff5f56;
+.window-lights {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.light {
+  width: 11px;
+  height: 11px;
   border-radius: 50%;
 }
 
-.window-header::after {
-  content: '';
-  width: 12px;
-  height: 12px;
-  background: #febc2e;
-  border-radius: 50%;
-  margin-right: 4px;
+.light-red {
+  background: #ff5f56;
 }
+
+.light-yellow {
+  background: #f59e0b;
+}
+
+.light-green {
+  background: #10b981;
+}
+
 
 .title {
   flex: 1;

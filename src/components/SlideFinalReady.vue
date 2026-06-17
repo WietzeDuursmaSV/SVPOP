@@ -1,6 +1,13 @@
 <template>
   <div class="slide slide-final">
     <div class="final-content">
+      <div class="pdf-actions">
+        <button class="pdf-button" :disabled="isExporting" @click="exportPdf">
+          {{ isExporting ? 'PDF genereren...' : 'Download PDF' }}
+        </button>
+      </div>
+
+      <div ref="pdfTarget" class="pdf-target">
       <div class="sharevalue-branding">
         <h2>Share<span class="value-text">Value</span></h2>
       </div>
@@ -17,6 +24,11 @@
               <h3 class="block-title">Wat ga je doen</h3>
               <div class="code-window">
                   <div class="window-header">
+                      <div class="window-lights">
+                        <span class="light light-red"></span>
+                        <span class="light light-yellow"></span>
+                        <span class="light light-green"></span>
+                      </div>
                       <span class="title">todo-1.md</span>
                     </div>
               <pre><code>{{ todos.todo1 }}</code></pre>
@@ -26,6 +38,11 @@
                 <h3 class="block-title">Wat heb je nodig</h3>
                 <div class="code-window">
                     <div class="window-header">
+                        <div class="window-lights">
+                          <span class="light light-red"></span>
+                          <span class="light light-yellow"></span>
+                          <span class="light light-green"></span>
+                        </div>
                         <span class="title">todo-2.md</span>
                     </div>
               <pre><code>{{ todos.todo2 }}</code></pre>
@@ -35,22 +52,32 @@
                 <h3 class="block-title">Visie</h3>
                 <div class="code-window">
                     <div class="window-header">
+                        <div class="window-lights">
+                          <span class="light light-red"></span>
+                          <span class="light light-yellow"></span>
+                          <span class="light light-green"></span>
+                        </div>
                         <span class="title">todo-3.md</span>
                     </div>
               <pre><code>{{ todos.todo3 }}</code></pre>
                 </div>
             </div>
         </div>
+          </div>
     </div>
 </div>
 </template>
 
 <script>
 import { defineComponent, inject, ref } from 'vue';
+import html2pdf from 'html2pdf.js/dist/html2pdf.js';
 
 export default defineComponent({
   name: 'SlideFinalReady',
   setup() {
+    const pdfTarget = ref(null);
+    const isExporting = ref(false);
+
     const todos = inject(
       'todos',
       ref({
@@ -60,8 +87,40 @@ export default defineComponent({
       })
     );
 
+    const exportPdf = async () => {
+      if (!pdfTarget.value || isExporting.value) {
+        return;
+      }
+
+      isExporting.value = true;
+
+      try {
+        await html2pdf()
+          .set({
+            margin: [8, 8, 8, 8],
+            filename: 'SV-POP-final-slide.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: {
+              scale: 2,
+              useCORS: true,
+              backgroundColor: '#0f1419'
+            },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+          })
+          .from(pdfTarget.value)
+          .save();
+      } catch (error) {
+        console.error('PDF export mislukt:', error);
+      } finally {
+        isExporting.value = false;
+      }
+    };
+
     return {
-      todos
+      todos,
+      pdfTarget,
+      isExporting,
+      exportPdf
     };
   }
 });
@@ -158,6 +217,41 @@ export default defineComponent({
   color: #cbd5e1;
 }
 
+.pdf-target {
+  background: linear-gradient(135deg, #1a1f35 0%, #0f1419 100%);
+  border-radius: 16px;
+  padding: 24px;
+  min-height: 520px;
+}
+
+.pdf-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.pdf-button {
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  background: rgba(59, 130, 246, 0.18);
+  color: #e2e8f0;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pdf-button:hover {
+  background: rgba(59, 130, 246, 0.28);
+}
+
+.pdf-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .action-blocks {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -191,20 +285,28 @@ export default defineComponent({
   align-items: center;
 }
 
-.window-header::before {
-  content: '';
+.window-lights {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.light {
   width: 11px;
   height: 11px;
-  background: #ff5f56;
   border-radius: 50%;
 }
 
-.window-header::after {
-  content: '';
-  width: 11px;
-  height: 11px;
-  background: #febc2e;
-  border-radius: 50%;
+.light-red {
+  background: #ff5f56;
+}
+
+.light-yellow {
+  background: #f59e0b;
+}
+
+.light-green {
+  background: #10b981;
 }
 
 .title {
