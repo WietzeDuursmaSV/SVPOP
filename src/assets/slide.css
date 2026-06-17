@@ -1,7 +1,7 @@
 .slide {
   min-height: 100vh;
   background: linear-gradient(135deg, #1a1f35 0%, #16213e 100%);
-  padding: 60px 40px;
+  padding: 60px 120px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
