@@ -1,71 +1,71 @@
 <template>
-  <div class="slide slide-final">
-    <div class="final-content">
-      <div class="pdf-actions">
-        <button class="pdf-button" :disabled="isExporting" @click="exportPdf">
-          {{ isExporting ? 'PDF genereren...' : 'Download PDF' }}
-        </button>
-      </div>
+  <div ref="pdfTarget" class="pdf-target">
+    <div class="slide slide-final">
+      <div class="final-content">
+        <div class="final-header">
+          <div class="person-info">
+            <p>Naam: {{ todos.name }}</p>
+            <p>Aanwezig: {{ todos.pressent }}</p>
+            <p>Datum: {{ todos.date }}</p>
+          </div>
+          <div class="sharevalue-branding">
+            <h2>Share<span class="value-text">Value</span></h2>
+          </div>
+        </div>
 
-      <div ref="pdfTarget" class="pdf-target">
-      <div class="sharevalue-branding">
-        <h2>Share<span class="value-text">Value</span></h2>
+        <div class="action-blocks">
+          <div class="action-block">
+            <div class="code-window">
+              <div class="window-header">
+                <div class="window-lights">
+                  <span class="light light-red"></span>
+                  <span class="light light-yellow"></span>
+                  <span class="light light-green"></span>
+                </div>
+                <span class="title">next-sprint.md</span>
+              </div>
+              <pre><code>{{ todos.next }}</code></pre>
+            </div>
+          </div>
+          <div class="action-block">
+            <div class="code-window">
+              <div class="window-header">
+                <div class="window-lights">
+                  <span class="light light-red"></span>
+                  <span class="light light-yellow"></span>
+                  <span class="light light-green"></span>
+                </div>
+                <span class="title">requirements.md</span>
+              </div>
+              <pre><code>{{ todos.requirements }}</code></pre>
+            </div>
+          </div>
+          <div class="action-block">
+            <div class="code-window">
+              <div class="window-header">
+                <div class="window-lights">
+                  <span class="light light-red"></span>
+                  <span class="light light-yellow"></span>
+                  <span class="light light-green"></span>
+                </div>
+                <span class="title">compass.md</span>
+              </div>
+              <pre><code>{{ todos.compass }}</code></pre>
+            </div>
+          </div>
+        </div>
       </div>
-      
-      <h1>Klaar voor de start?</h1>
-
-        <div class="command-line">
+      <div class="command-line">
         <span class="prefix">➜</span>
         <span class="command">git commit -m "klaar-voor-de-volgende-stap"</span>
-        </div>
-
-      <div class="action-blocks">
-          <div class="action-block">
-              <h3 class="block-title">Wat ga je doen</h3>
-              <div class="code-window">
-                  <div class="window-header">
-                      <div class="window-lights">
-                        <span class="light light-red"></span>
-                        <span class="light light-yellow"></span>
-                        <span class="light light-green"></span>
-                      </div>
-                      <span class="title">todo-1.md</span>
-                    </div>
-              <pre><code>{{ todos.todo1 }}</code></pre>
-                </div>
-            </div>
-            <div class="action-block">
-                <h3 class="block-title">Wat heb je nodig</h3>
-                <div class="code-window">
-                    <div class="window-header">
-                        <div class="window-lights">
-                          <span class="light light-red"></span>
-                          <span class="light light-yellow"></span>
-                          <span class="light light-green"></span>
-                        </div>
-                        <span class="title">todo-2.md</span>
-                    </div>
-              <pre><code>{{ todos.todo2 }}</code></pre>
-                </div>
-            </div>
-            <div class="action-block">
-                <h3 class="block-title">Visie</h3>
-                <div class="code-window">
-                    <div class="window-header">
-                        <div class="window-lights">
-                          <span class="light light-red"></span>
-                          <span class="light light-yellow"></span>
-                          <span class="light light-green"></span>
-                        </div>
-                        <span class="title">todo-3.md</span>
-                    </div>
-              <pre><code>{{ todos.todo3 }}</code></pre>
-                </div>
-            </div>
-        </div>
-          </div>
+      </div>
     </div>
-</div>
+  </div>
+  <div class="pdf-actions">
+    <button class="pdf-button" :disabled="isExporting" @click="exportPdf">
+      {{ isExporting ? 'PDF genereren...' : 'Download PDF' }}
+    </button>
+  </div>
 </template>
 
 <script>
@@ -81,9 +81,12 @@ export default defineComponent({
     const todos = inject(
       'todos',
       ref({
-        todo1: 'TODO 1',
-        todo2: 'TODO 2',
-        todo3: 'TODO 3'
+        name: 'NAME',
+        pressent: 'PRESENT',
+        date: 'DATE',
+        next: 'TODO 1',
+        requirements: 'TODO 2',
+        compass: 'TODO 3',
       })
     );
 
@@ -103,9 +106,9 @@ export default defineComponent({
             html2canvas: {
               scale: 2,
               useCORS: true,
-              backgroundColor: '#0f1419'
+              backgroundColor: '#0f1419',
             },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
           })
           .from(pdfTarget.value)
           .save();
@@ -120,20 +123,35 @@ export default defineComponent({
       todos,
       pdfTarget,
       isExporting,
-      exportPdf
+      exportPdf,
     };
-  }
+  },
 });
 </script>
 
 <style scoped>
+.final-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+.person-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #94a3b8;
+  font-size: 1.275rem;
+  font-family: 'Courier New', monospace;
+  margin: 0;
+  align-items: flex-start;
+}
 .slide {
   min-height: 100vh;
   background: linear-gradient(135deg, #1a1f35 0%, #0f1419 100%);
   padding: 60px 60px;
   display: flex;
   align-items: center;
-  justify-content: center;
   color: #fff;
   position: relative;
   overflow: hidden;
@@ -165,7 +183,7 @@ export default defineComponent({
   position: relative;
   z-index: 1;
   text-align: center;
-  max-width: 1100px;
+  max-width: 1600px;
   width: 100%;
 }
 
@@ -218,10 +236,9 @@ export default defineComponent({
 }
 
 .pdf-target {
-  background: linear-gradient(135deg, #1a1f35 0%, #0f1419 100%);
+  /* background: linear-gradient(135deg, #1a1f35 0%, #0f1419 100%); */
   border-radius: 16px;
   padding: 24px;
-  min-height: 520px;
 }
 
 .pdf-actions {
@@ -257,6 +274,7 @@ export default defineComponent({
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
   text-align: left;
+  margin: 4rem;
 }
 
 .block-title {
@@ -271,29 +289,29 @@ export default defineComponent({
 
 .code-window {
   background: #0f1419;
-  border-radius: 10px;
+  border-radius: 15px;
   overflow: hidden;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 }
 
 .window-header {
   background: #1e293b;
-  padding: 10px 14px;
+  padding: 15px 21px;
   border-bottom: 1px solid #334155;
   display: flex;
-  gap: 8px;
+  gap: 12px;
   align-items: center;
 }
 
 .window-lights {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
 }
 
 .light {
-  width: 11px;
-  height: 11px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
 }
 
@@ -312,21 +330,21 @@ export default defineComponent({
 .title {
   flex: 1;
   color: #94a3b8;
-  font-size: 0.85rem;
+  font-size: 1.275rem;
   font-family: 'Courier New', monospace;
-  margin-left: 6px;
+  margin-left: 9px;
 }
 
 pre {
   margin: 0;
-  padding: 20px;
+  padding: 30px;
   background: #0f1419;
-  min-height: 100px;
+  min-height: 150px;
 }
 
 code {
   font-family: 'Courier New', monospace;
-  font-size: 0.9rem;
+  font-size: 1.35rem;
   color: #4ade80;
   white-space: pre-wrap;
 }

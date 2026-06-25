@@ -21,14 +21,17 @@ export default defineComponent({
     Slide3NextSprint,
     Slide4Compass,
     SlideFinalReady,
-    ControlPage
+    ControlPage,
   },
   setup() {
     const currentSlide = ref(0);
     const todos = ref({
-      todo1: 'TODO 1',
-      todo2: 'TODO 2',
-      todo3: 'TODO 3'
+      name: '',
+      pressent: '',
+      date: '',
+      next: 'TODO 1',
+      requirements: 'TODO 2',
+      compass: 'TODO 3',
     });
 
     const isControlPage = computed(() => window.location.pathname.startsWith('/control'));
@@ -43,9 +46,12 @@ export default defineComponent({
         }
         const data = await response.json();
         todos.value = {
-          todo1: data.todo1 ?? 'TODO 1',
-          todo2: data.todo2 ?? 'TODO 2',
-          todo3: data.todo3 ?? 'TODO 3'
+          name: data.name ?? '',
+          pressent: data.pressent ?? '',
+          date: data.date ?? '',
+          next: data.next ?? data.todo1 ?? 'TODO 1',
+          requirements: data.requirements ?? data.todo2 ?? 'TODO 2',
+          compass: data.compass ?? data.todo3 ?? 'TODO 3',
         };
       } catch {
         // Keep existing values when API is temporarily unavailable.
@@ -72,7 +78,7 @@ export default defineComponent({
       { component: Slide2Review, name: 'Review' },
       { component: Slide3NextSprint, name: 'Next Sprint' },
       { component: Slide4Compass, name: 'Compass' },
-      { component: SlideFinalReady, name: 'Ready' }
+      { component: SlideFinalReady, name: 'Ready' },
     ];
 
     const nextSlide = () => {
@@ -106,66 +112,68 @@ export default defineComponent({
       nextSlide,
       prevSlide,
       goToSlide,
-      handleKeydown
+      handleKeydown,
     };
-  }
+  },
 });
 </script>
 
 <template>
-  <ControlPage v-if="isControlPage" />
+  <div ref="pdfTarget" class="pdf-target">
+    <ControlPage v-if="isControlPage" />
 
-  <div v-else class="presentation-container" @keydown="handleKeydown" tabindex="0">
-    <!-- Title Slide -->
-    <div v-if="currentSlide === -1" class="title-slide">
-      <div class="title-content">
-        <div class="sharevalue-logo">Share<span>Value</span></div>
-        <h1>Persoonlijk Ontwikkelings Plan</h1>
-        <p class="subtitle">Een interactieve reis door reflectie, planning en groei</p>
-        <div class="start-button" @click="goToSlide(0)">
-          <span>Start →</span>
+    <div v-else class="presentation-container" @keydown="handleKeydown" tabindex="0">
+      <!-- Title Slide -->
+      <div v-if="currentSlide === -1" class="title-slide">
+        <div class="title-content">
+          <div class="sharevalue-logo">Share<span>Value</span></div>
+          <h1>Persoonlijk Ontwikkelings Plan</h1>
+          <p class="subtitle">Een interactieve reis door reflectie, planning en groei</p>
+          <div class="start-button" @click="goToSlide(0)">
+            <span>Start →</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Slides -->
-    <transition name="slide-fade" mode="out-in">
-      <div :key="currentSlide" class="slide-wrapper">
-        <component :is="slides[currentSlide].component" />
-      </div>
-    </transition>
-
-    <!-- Navigation -->
-    <div class="navigation">
-      <button 
-        v-if="currentSlide > 0"
-        @click="prevSlide"
-        class="nav-button prev-button"
-        title="Vorige slide (← of ←)"
-      >
-        ← Vorige
-      </button>
-
-      <div class="slide-indicator">
-        <div class="dots">
-          <span 
-            v-for="(slide, index) in slides"
-            :key="index"
-            :class="['dot', { active: currentSlide === index }]"
-            @click="goToSlide(index)"
-          ></span>
+      <!-- Slides -->
+      <transition name="slide-fade" mode="out-in">
+        <div :key="currentSlide" class="slide-wrapper">
+          <component :is="slides[currentSlide].component" />
         </div>
-        <span class="slide-count">{{ currentSlide + 1 }} / {{ slides.length }}</span>
-      </div>
+      </transition>
 
-      <button 
-        v-if="currentSlide < slides.length - 1"
-        @click="nextSlide"
-        class="nav-button next-button"
-        title="Volgende slide (→ of Spatie)"
-      >
-        Volgende →
-      </button>
+      <!-- Navigation -->
+      <div class="navigation">
+        <button
+          v-if="currentSlide > 0"
+          @click="prevSlide"
+          class="nav-button prev-button"
+          title="Vorige slide (← of ←)"
+        >
+          ← Vorige
+        </button>
+
+        <div class="slide-indicator">
+          <div class="dots">
+            <span
+              v-for="(slide, index) in slides"
+              :key="index"
+              :class="['dot', { active: currentSlide === index }]"
+              @click="goToSlide(index)"
+            ></span>
+          </div>
+          <span class="slide-count">{{ currentSlide + 1 }} / {{ slides.length }}</span>
+        </div>
+
+        <button
+          v-if="currentSlide < slides.length - 1"
+          @click="nextSlide"
+          class="nav-button next-button"
+          title="Volgende slide (→ of Spatie)"
+        >
+          Volgende →
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -183,7 +191,7 @@ body {
 .presentation-container {
   position: relative;
   width: 100%;
-  overflow: hidden;
+  /* overflow: hidden; */
   focus-visible: none;
   outline: none;
 }
